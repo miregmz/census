@@ -32,3 +32,30 @@ income_tx |>
     mean_margin_of_error = mean(moe, na.rm = TRUE)
   )
 ```
+
+```{r}
+#| message: false
+edu_state <- get_acs(
+  geography = "state",
+  variables = c(
+    total = "B15003_001",
+    bachelors = "B15003_022",
+    masters = "B15003_023",
+    professional = "B15003_024",
+    doctorate = "B15003_025"
+  ),
+  summary_var = "B15003_001",
+  year = 2020
+)
+```
+
+```{r}
+edu_state |>
+  filter(variable != "total") |>
+  group_by(GEOID, NAME) |>
+  summarize(
+    bachelors_or_higher_pct = sum(estimate) / first(summary_est) * 100,
+    .groups = "drop"
+  ) |>
+  arrange(desc(bachelors_or_higher_pct))
+```
